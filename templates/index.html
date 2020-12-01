@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Christmas Lights</title>
+    
+    <script src="static/utils.js"></script>
+
+    <link href="static/lib/fonts.css" rel="stylesheet">
+    <link href="static/lib/materialdesignicons.min.css" rel="stylesheet">
+    <link href="static/lib/vuetify.min.css" rel="stylesheet">
+
+  </head>
+  <body>
+    <div id="app">
+        <v-app>
+            <v-main>
+                <v-container>
+                  <v-row>
+                    <v-col md="12">
+                      <light-card v-for="light in lights"
+                        :key="light.channel"
+                        :name="light.name"
+                        :channel="light.channel">
+
+                      </light-card>
+                    </v-col>
+                  </v-row>
+                </v-container>
+            </v-main>
+        </v-app>
+    </div>
+
+    <script src="static/lib/vue.js"></script>
+    <script src="static/lib/vuetify.js"></script>
+    
+    <script src="static/card.js"></script>
+
+    <script src="static/app.js"></script>
+  </body>
+</html>
