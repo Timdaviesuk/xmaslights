@@ -2,15 +2,29 @@ new Vue({
     el: '#app',
     vuetify: new Vuetify(),
     data: {
-        lights: [
-            { name: 'Light 1', channel: 0},
-            { name: 'Light 2', channel: 1},
-            { name: 'Light 3', channel: 2},
-            { name: 'Light 4', channel: 3},
-            { name: 'Light 5', channel: 4},
-            { name: 'Light 6', channel: 5},
-            { name: 'Light 7', channel: 6},
-            { name: 'Light 8', channel: 7}
-        ]
+        lights: [],
+    },
+    methods: {
+        async getLights() {
+            const url = `api/lights`;
+            const response = await fetch(url);
+            this.lights = await response.json();
+            this.updateState();
+        },
+        async updateState() {
+            const url = `api/lights`;
+            const response = await fetch(url);
+            const lightStates = await response.json();
+            
+            lightStates.forEach(l => {
+                // Get the light
+                const light = this.lights.find((ll) => ll.id === l.id);
+                light.state = l.state;
+            });
+        }
+    },
+    async mounted() {
+        await this.getLights();
+        setInterval(this.updateState, 2000)
     }
-  })
+})

@@ -3,11 +3,9 @@
   <head>
     <meta charset="utf-8">
     <title>Christmas Lights</title>
-    
-    <script src="static/utils.js"></script>
 
     <link href="static/lib/fonts.css" rel="stylesheet">
-    <link href="static/lib/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
     <link href="static/lib/vuetify.min.css" rel="stylesheet">
 
   </head>
@@ -17,11 +15,13 @@
             <v-main>
                 <v-container>
                   <v-row>
-                    <v-col md="12">
+                    <v-col md="1">
                       <light-card v-for="light in lights"
                         :key="light.channel"
                         :name="light.name"
-                        :channel="light.channel">
+                        :channel="light.channel"
+                        :id="light.id"
+                        :state="light.state">
 
                       </light-card>
                     </v-col>

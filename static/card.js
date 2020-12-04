@@ -1,6 +1,6 @@
 // Define a new component called button-counter
 Vue.component('light-card', {
-    props: ['name', 'channel', 'image'],
+    props: ['id', 'name', 'channel', 'image', 'state'],
     data: function () {
       return {
         count: 0
@@ -11,17 +11,23 @@ Vue.component('light-card', {
         <v-card
         elevation="2"
             >
-            <v-card-title>{{ name }}</v-card-title>
+
             <v-card-actions>
-                <v-btn v-on:click="light(1)">On</v-btn>  
-                <v-btn v-on:click="light(0)">Off</v-btn>
+                <span>{{ name }}</span>
+                <v-icon v-if="state" v-on:click="light(0)">mdi-eye</v-icon>
+                <v-icon v-if="state===false" v-on:click="light(1)">mdi-eye-off</v-icon>
             </v-card-actions>
         </v-card>
     </div>
     `,
     methods: {
         async light(signal) {
-            const url = `api/light/${this.channel}?signal=${signal}`;
+            if (signal === 0)
+                this.state = false;
+            else
+                this.state = true;
+            
+            const url = `api/lights/${this.id}?signal=${signal}`;
             const response = await fetch(url);
             console.log(response);
         }

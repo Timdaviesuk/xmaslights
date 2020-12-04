@@ -1,25 +1,32 @@
 #import RPi.GPIO as GPIO
 import time
 import csv
+import json
 from flask import Flask, request, jsonify, render_template, send_from_directory
 
 app = Flask(__name__)
+
+# Class representing a light
+class Light:    
+    def __init__(self, id, name, channel):
+        self.id = id
+        self.name = name
+        self.channel = channel
+        self.state = False
 
 ################
 # GPIO Methods #
 ################
 
-channel_1 = 11
-channel_2 = 13
-channel_3 = 15
-channel_4 = 16
-channel_5 = 18
-channel_6 = 22
-channel_7 = 29
-channel_8 = 31
-
-channels = [channel_1, channel_2, channel_3, channel_4, channel_5, channel_6, channel_7, channel_8]
-channel_states = [0, 0, 0, 0, 0, 0, 0, 0]
+lights = [Light(0, "Train", 11),
+    Light(1, "Snowman", 13),
+    Light(2, "Motorbike santa",15),
+    Light(3, "Christmas trees", 16),
+    Light(4, "Silouthette santa", 18),
+    Light(5, "Sleigh", 22),
+    Light(6, "Candy canes", 29),
+    Light(7, "Icicles", 31)
+]
 
 sequences = ["test.csv", "chasing.csv"]
 
@@ -30,9 +37,9 @@ def gpio_setup():
     GPIO.setmode(GPIO.BOARD)
 
     # By default, set all to be output and on
-    for channel in channels:
-        GPIO.setup(channel, GPIO.OUT)
-        set_gpio(channel, "1")
+    for light in lights:
+        GPIO.setup(light.channel, GPIO.OUT)
+        set_gpio(light.channel, "1")
 
 def run_sequence(filename):
     with open(filename) as csvfile:
@@ -48,15 +55,15 @@ def run_sequence(filename):
 
             time.sleep(wait)
 
-def set_gpio(channel, signal):
-    channel_s = channels[channel]
-    sig = bool(float(signal))
-    if sig == True:
-        print("Turn on  " + str(channel))
-        #GPIO.output(channel_s, GPIO.LOW)
+def set_gpio(light, signal):
+    if signal == True:
+        print("Turn on  " + str(light.channel))
+        #GPIO.output(light.channel, GPIO.LOW)
     else:
-        print("Turn off " + str(channel))
-        #GPIO.output(channel_s, GPIO.HIGH)
+        print("Turn off " + str(light.channel))
+        #GPIO.output(light.channel, GPIO.HIGH)
+
+    light.state = signal
 
 def destroy():
     GPIO.cleanup()                     # Release all GPIO
@@ -65,12 +72,21 @@ def destroy():
 # Web API Endpoints #
 #####################
 
+def obj_dict(obj):
+    return obj.__dict__
+
+# Get the list of lights
+@app.route('/api/lights')
+def get_lights():
+    return json.dumps(lights, default=obj_dict)
+
 # Set an individual light
-@app.route('/api/light/<id>')
+@app.route('/api/lights/<id>')
 def set_light(id):
-    channel = int(id)
+    light = next((l for l in lights if l.id == int(id)), None)
     signal = request.args.get('signal')
-    set_gpio(channel, signal)
+    signal1 = bool(float(signal))
+    set_gpio(light, signal1)
     return jsonify({"result":True})
 
 # Start running a sequence. This is WIP, need to implement running a sequence in a seperate process
